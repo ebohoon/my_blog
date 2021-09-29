@@ -38,12 +38,12 @@
             window.location.href = "/detail?writeId=" + a;
         });
 
-        function get_story(category) {
+        function get_story() {
             $("#goodsList").empty()
-            console.log(category)
+
             $.ajax({
                 type: "GET",
-                url: `/api/stories${category ? "?category=" + category : ""}`,
+                url: "/api/stories",
                 data: {},
                 success: function (response) {
                     let stories = response["story"]

@@ -7,13 +7,13 @@ const router = express.Router()
 
 router.get("/stories", async (req, res, next) => {
   try {
-    const { category } = req.query
+    const { writeId } = req.query
 
-    if ({ category }.category === undefined) {
+    if ({ writeId }.writeId === undefined) {
       const story = await stories.find({}).sort("-writeId")
       res.json({ story: story })
     } else {
-      const story = await stories.find({ category }).sort("-writeId")
+      const story = await stories.find({ writeId }).sort("-writeId")
       res.json({ story: story })
     }
   } catch (err) {
@@ -43,6 +43,27 @@ router.post("/stories", async (req, res) => {
     res.send({ result: "success" })
   } catch (err) {
     console.log(err)
+    res.send({ result: "err" })
+  }
+})
+
+router.delete("/stories/:writeId", async (req, res) => {
+  const { writeId } = req.params
+  const iswrite = await stories.find({ writeId })
+  if (iswrite.length > 0) {
+    await stories.deleteOne({ writeId })
+    res.send({ result: "success" })
+  }
+})
+
+router.patch("/stories/:writeId", async (req, res) => {
+  const { writeId } = req.params
+  const { title, thumbnailUrl, story } = req.body
+  const iswrite = await stories.find({ writeId })
+  if (iswrite.length > 0) {
+    await stories.updateOne({ writeId }, { $set: { title, thumbnailUrl, story } })
+    res.send({ result: "success" })
+  } else {
     res.send({ result: "err" })
   }
 })

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon" />
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous" />
+
+    <!-- Font Awesome CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js"
+        integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.4.0/socket.io.js"></script>
+
+    <link href="/static/mystyle.css" rel="stylesheet" />
+    <title>BH STUDIO</title>
+    <script>
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const writeId = urlParams.get("writeId");
+
+        $(document).ready(function () {
+            get_revise()
+
+        })
+
+        function get_revise() {
+            $.ajax({
+                type: "GET",
+                url: `/api/stories/${writeId}`,
+                data: {},
+                error: function (xhr, status, error) {
+                    if (status == 404) {
+                        alert("존재하지 않는 게시글입니다.");
+                    }
+                    window.location.href = "/";
+                },
+                success: function (response) {
+                    let story = response["story"];
+                    $("#title").val(story["title"]);
+                    $("#url").val((story["thumbnailUrl"]));
+                    $("#story").text((story["story"]));
+
+                }
+            });
+        }
+
+        function patch_write() {
+            let title = $("#title").val()
+            let url = $("#url").val()
+            let story = $("#story").val()
+
+
+            $.ajax({
+                type: "patch",
+                url: `/api/stories/${writeId}`,
+                data: {
+                    title: title,
+                    thumbnailUrl: url,
+                    story: story,
+
+                },
+                success: function (response) {
+                    alert("수정완료")
+                    window.location.replace("/")
+
+
+                }
+            })
+        }
+
+        function del_write() {
+            let title = $("#title").val()
+            let url = $("#url").val()
+            let story = $("#story").val()
+
+            $.ajax({
+                type: "delete",
+                url: `/api/stories/${writeId}`,
+                data: {
+
+                },
+                success: function (response) {
+
+
+                    alert("삭제완료")
+                    window.location.replace("/")
+                }
+            })
+        }
+    </script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-sm navbar-dark bg-sparta justify-content-end">
+        <a class="navbar-brand" href="/">
+            <img src="/static/bhstudio.jpg" width="30" height="30" class="d-inline-block align-top" alt="" />
+            BH STUDIO
+        </a>
+        <button class="navbar-toggler ml-auto" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="true"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse flex-grow-0 ml-auto" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto text-right">
+                <li class="nav-item" id="link-cart">
+                    <a class="nav-link" href="/write"> 게시글올리기 </a>
+                </li>
+                <li class="nav-item" id="link-logout">
+                    <a class="nav-link" data-toggle="modal" data-target="#signOutModal">
+                        로그아웃<i class="fa fa-sign-out ml-2" aria-hidden="true"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="all">
+
+        <header w3-include-html="header" class="head"></header>
+
+        <div class="wrap">
+            <div class="input-boxes">
+                <div class="form">
+                    <label for="colFormLabel" class="label">제목</label>
+                    <div class="col-sm-10">
+                        <input type="email" class="form-control" id="title" placeholder="">
+
+                    </div>
+                </div>
+                <div class="form">
+                    <label for="colFormLabel" class="label">사진 URL</label>
+                    <div class="col-sm-10">
+                        <input type="email" class="form-control" id="url" placeholder="">
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="story">내용</label>
+                    <textarea class="form-control" id="story" rows="3"></textarea>
+                </div>
+
+                <button type="button" class="btn btn-info" onclick="patch_write()">수정하기</button>
+                <button type="button" class="btn btn-info" onclick="del_write()">삭제하기</button>
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+    </div>
+
+
+</body>
+
+</html>
