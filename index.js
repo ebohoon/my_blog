@@ -21,19 +21,17 @@ app.get("/", (req, res, next) => {
 
 //게시물 한가지
 app.get("/write", (req, res) => {
-  let num = req.query.name
-  res.render("write", { num })
+  res.render("write")
 })
 
-//게시물 올리기
-app.get("/upwrite", (req, res) => {
-  res.render("upwrite")
+//게시물 상세
+app.get("/detail", (req, res) => {
+  res.render("detail")
 })
 
-//게시물 삭제,수정
-app.get("/delwrite", (req, res) => {
-  let num = req.query.name
-  res.render("delwrite", { num })
+//게시물 수정
+app.get("/revise", (req, res) => {
+  res.render("revise")
 })
 
 app.listen(port, () => {

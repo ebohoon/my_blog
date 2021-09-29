@@ -2,6 +2,11 @@ const mongoose = require("mongoose")
 
 const { Schema } = mongoose
 const storySchema = new Schema({
+  writeId: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   title: {
     type: String,
     required: true,
@@ -16,6 +21,10 @@ const storySchema = new Schema({
     type: String,
     required: true,
     unique: true,
+  },
+  date: {
+    type: String,
+    required: true,
   },
 })
 
