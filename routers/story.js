@@ -28,7 +28,7 @@ router.get("/stories/:writeId", async (req, res) => {
   if (writes == null) {
     res.send({ result: "게시물이존재하지않습니다." })
   } else {
-    res.json({ detail: writes })
+    res.json({ story: writes })
   }
 })
 
