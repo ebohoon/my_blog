@@ -2,7 +2,7 @@ const mongoose = require("mongoose")
 
 const connect = () => {
   mongoose
-    .connect("mongodb://localhost:27017/my_blog", {
+    .connect("mongodb://test:test@3.36.71.96:27017/test?authSource=admin", {
       useNewUrlParser: true,
     })
     .catch((err) => console.log(err))
