@@ -2,12 +2,7 @@ const mongoose = require("mongoose")
 
 const { Schema } = mongoose
 const storySchema = new Schema({
-  goodsId: {
-    type: Number,
-    required: true,
-    unique: true,
-  },
-  name: {
+  title: {
     type: String,
     required: true,
     unique: true,

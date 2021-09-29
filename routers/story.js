@@ -1,23 +1,31 @@
 const express = require("express")
-const Goods = require("../schemas/story")
+const stories = require("../schemas/story")
 
 const router = express.Router()
 
-router.get("/goods", async (req, res, next) => {
+router.get("/stories", async (req, res, next) => {
   try {
     const { category } = req.query
 
     if ({ category }.category === undefined) {
-      const goods = await Goods.find({}).sort("-goodsId")
-      res.json({ goods: goods })
+      const story = await stories.find({})
+      res.json({ story: stories })
     } else {
-      const goods = await Goods.find({ category }).sort("-goodsId")
-      res.json({ goods: goods })
+      const story = await stories.find({ category })
+      res.json({ story: stories })
     }
   } catch (err) {
     console.error(err)
     next(err)
   }
+})
+
+router.post("/stories", async (req, res) => {
+  const { title, thumbnailUrl, story } = req.body
+
+  await stories.create({ title, thumbnailUrl, story })
+
+  res.send({ result: "success" })
 })
 
 module.exports = router

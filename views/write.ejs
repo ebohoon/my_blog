@@ -29,33 +29,31 @@
     <link href="/static/mystyle.css" rel="stylesheet">
     <title>BH STUDIO</title>
     <script>
-        $(document).ready(function () {
-            get_story()
+        function up_write() {
 
-        })
+            let title = $("#title").val()
+            let url = $("#url").val()
+            let story = $("#story").val()
 
-
-
-        function get_story(category) {
-            // $("#goodsList").empty()
-            console.log(category)
-            $.ajax({
-                type: "GET",
-                url: `/api/stories${category ? "?category=" + category : ""}`,
-                data: {},
-                success: function (response) {
-                    let goods = response["goods"]
-                    for (let i = 0; i < goods.length; i++) {
-                        make_card(goods[i])
-
+            console.log(title, url, story)
+            if (title == "" || url == "" || story == "") {
+                alert("빈값이 있어요.")
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: `/api/stories`,
+                    data: {
+                        title: title,
+                        story: story,
+                        thumbnailUrl: url
+                    },
+                    success: function (response) {
+                        console.log(response["result"])
+                        alert("작성 완료")
+                        window.location.href = '/'
                     }
-                }
-            })
-        }
-
-        function make_card(item) {
-            let htmlTemp = ``
-            $("#goodsList").append(htmlTemp)
+                })
+            }
         }
     </script>
     <style>
@@ -91,25 +89,44 @@
         </div>
 
     </nav>
-    <div class="wrap">
-        <div id=goodsList>
-            <div class="card mb-3" style="max-width: 540px;" onclick="location.href='detail'">
-                <div class="row no-gutters">
-                    <div class="col-md-4">
-                        <img src="..." class="card-img" alt="...">
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">Card title</h5>
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
-                                additional content. This content is a little bit longer.</p>
-                            <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-                        </div>
+    <div class="all">
+
+        <header w3-include-html="header" class="head"></header>
+
+        <div class="wrap">
+            <div class="input-boxes">
+                <div class="form">
+                    <label for="colFormLabel" class="label">제목</label>
+                    <div class="col-sm-10">
+                        <input type="email" class="form-control" id="title" placeholder="">
+
                     </div>
                 </div>
+                <div class="form">
+                    <label for="colFormLabel" class="label">사진 URL</label>
+                    <div class="col-sm-10">
+                        <input type="email" class="form-control" id="url" placeholder="">
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="story">내용</label>
+                    <textarea class="form-control" id="story" rows="3"></textarea>
+                </div>
+
+                <button style="background-color:black; border-color:black" type="button" id="button"
+                    class="btn-primary btn-lg" onclick="up_write()">작성하기
+                </button>
+
+
             </div>
+
+
         </div>
+
     </div>
+    </div>
+
 
 </body>
 
