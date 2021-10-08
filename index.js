@@ -1,4 +1,8 @@
 const express = require("express")
+const cookieParser = require("cookie-parser")
+const jwt = require("jsonwebtoken")
+const session = require("express-session")
+
 const app = express()
 const port = 3000
 
@@ -8,6 +12,28 @@ connect()
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 app.use(express.static("public"))
+
+app.use(
+  session({
+    key: "sid",
+    secret: "secret",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      maxAge: 24000 * 60 * 60, // 쿠키 유효기간 24시간
+    },
+  })
+)
+app.use(cookieParser())
+app.use((req, res, next) => {
+  if (req.cookies.user != null) {
+    let decoded = jwt.verify(tokenValue, "bohoon100")
+    res.locals.mysess = decoded["userId"]
+  } else {
+    res.locals.mysess = ""
+  }
+  next()
+})
 
 const storyRouter = require("./routers/story")
 app.use("/api", storyRouter)

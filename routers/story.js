@@ -1,11 +1,15 @@
 const express = require("express")
 const stories = require("../schemas/story")
 const authMiddleware = require("../middlewares/auth-middleware")
+const commentMiddleware = require("../middlewares/comment-middleware")
+var cookie = require("cookie-parser")
 
 const v1 = require("uuid")
 require("date-utils")
 
 const router = express.Router()
+
+router.use(cookie())
 
 router.get("/stories", async (req, res, next) => {
   try {
@@ -85,6 +89,56 @@ router.patch("/stories/:writeId", authMiddleware, async (req, res) => {
       res.status(400).send({ result: "err" })
     }
   }
+})
+
+// 댓글 생성
+router.post("/rewrite/:writeId", authMiddleware, async (req, res) => {
+  const { writeId } = req.params
+  const { rebody, username } = req.body
+  stories.findOne({ writeId }).then((writes) => {
+    if (writes != null) {
+      let rewrites = writes["rewrite"]
+      doc = { rebody: rebody, pw: "123123", username: username }
+      rewrites.push(doc)
+      console.log(rewrites)
+      writes.rewrite = rewrites
+      writes.save()
+      res.send({ result: "success" })
+    } else {
+      res.send({ result: "err" })
+    }
+  })
+})
+
+//댓글 수정
+router.patch("/rewrite/:writeId", commentMiddleware, async (req, res) => {
+  const { writeId } = req.params
+  const { rebody, reid } = req.body
+  stories.findOne({ writeId }).then((writes) => {
+    if (writes != null) {
+      let rewrites = writes.rewrite.id(reid)
+      rewrites.rebody = rebody
+      writes.save()
+      res.status(200).send({ result: "success" })
+    } else {
+      res.status(401).send({ result: "err" })
+    }
+  })
+})
+//댓글 삭제
+router.delete("/rewrite/:writeId", commentMiddleware, async (req, res) => {
+  const { writeId } = req.params
+  const { reid } = req.body
+  stories.findOne({ writeId }).then((writes) => {
+    if (writes != null) {
+      let rewrites = writes.rewrite.id(reid)
+      rewrites.remove()
+      writes.save()
+      res.send({ result: "success" })
+    } else {
+      res.send({ result: "err" })
+    }
+  })
 })
 
 module.exports = router

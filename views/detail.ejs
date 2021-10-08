@@ -45,6 +45,9 @@
                 type: "GET",
                 url: `/api/stories/${writeId}`,
                 data: {},
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
                 success: function (response) {
                     let write = response["story"]
                     if (write == null) {
@@ -52,6 +55,10 @@
                     } else {
                         console.log(write)
                         make_card(write)
+
+                        for (rewrite of write["rewrite"]) {
+                            make_re(rewrite)
+                        }
                     }
                 },
             })
@@ -73,11 +80,152 @@
             $("#goodsList").append(htmlTemp)
         }
 
+        function make_re(item) {
+            let htmlTemp = `
+            <tr val = "${item["_id"]}">
+                <th>
+                    ${item["username"]}
+                </th>
+                <th id = "test">
+                    <input type="text" id = "name" placeholder="댓글내용입력 해주세요" value="${item["rebody"]}" readonly>
+                </th>
+                <th>
+                    <button onclick="pat_rewrite(this)"> 수정</button><button onclick="del_rewrite(this)"> 삭제</button>
+                    <button class = "hide" onclick="dopat_rewrite(this)"> 완료</button><button class = "hide" onclick="fall_rewrite(this)"> 취소</button>
+                </th>
+            </tr>`
+            $("#comment_list").append(htmlTemp)
+        }
+
+        function up_rewrite() {
+            let name = $("#toname").val()
+            let rebody = $("#rebody").val()
+            if (rebody == "") {
+                $("#rebody").focus()
+                alert("빈칸이 없게 해주세요")
+                return
+            }
+            $.ajax({
+                type: "POST",
+                url: `/api/rewrite/${writeId}`,
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                data: {
+                    rebody: rebody,
+                    username: name,
+                },
+                success: function (response) {
+                    alert(response["result"])
+                    get_story()
+                    window.location.reload()
+                },
+                error: function (error) {
+                    alert(error.responseJSON.errorMessage)
+                },
+            })
+        }
+
+        //댓글 수정
+        function pat_rewrite(test) {
+
+            const reid = $(test).parents("tr").attr('val')
+            let a = $(test).parents("tr");
+            $(a).children("#test").children("#name").removeAttr('readonly');
+            const rebody = $(a).children("#test").children("#name").val();
+            frewrite = $(a).children("#test").children("#name").val();
+            $(test).parent().children("button").toggleClass("hide");
+            $(a).children("#test").children("#name").val("")
+
+
+        }
+        //수정 완료!
+        function dopat_rewrite(test) {
+            const reid = $(test).parents("tr").attr('val')
+            let a = $(test).parents("tr");
+            const rebody = $(a).children("#test").children("#name").val();
+            frewrite = $(a).children("#test").children("#name").val();
+            $.ajax({
+                type: "PATCH",
+                url: `/api/rewrite/${writeId}`,
+                data: {
+                    rebody: rebody,
+                    reid: reid
+                },
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                success: function (response) {
+                    alert(response["result"])
+                    window.location.reload();
+                },
+                error: function (error) {
+                    alert(error.responseJSON.errorMessage);
+                    window.location.reload();
+                },
+            })
+
+        }
+        //수정 취소
+        function fall_rewrite(test) {
+            console.log($(test).parents("tr").attr('val'))
+            let a = $(test).parents("tr");
+            //console.log($(a).children("#test").text().trim())
+            $(a).children("#test").children("#name").attr('readonly', 'readonly');
+            //$(a).children("#test").children("#name").removeAttr('readonly');
+            console.log($(a).children("#test").children("#name").val())
+            console.log($(test).parent().children("button"))
+            $(test).parent().children("button").toggleClass("hide");
+            $(a).children("#test").children("#name").val(frewrite)
+
+        }
+        //댓글삭제
+        function del_rewrite(test) {
+            if (confirm("정말 삭제하시겠습니까??") == false) {
+                return;
+            }
+            const reid = $(test).parents("tr").attr('val')
+            $.ajax({
+                type: "DELETE",
+                url: `/api/rewrite/${writeId}`,
+                data: {
+                    reid: reid
+                },
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                success: function (response) {
+                    alert(response["result"])
+                    window.location.reload();
+                },
+                error: function (error) {
+                    alert(error.responseJSON.errorMessage);
+                },
+            })
+
+        }
+
+
+
+
+
+
+
         function signOut() {
-            localStorage.clear();
-            window.location.href = "/";
+            localStorage.clear()
+            window.location.href = "/"
         }
     </script>
+
+    <style>
+        html {
+            overflow: auto;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -121,6 +269,32 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            <input type="text" id="toname" placeholder="비로그인 작성불가"
+                                value="<% if(mysess){ %><%= id %><% } %>" readonly />
+                        </th>
+                        <th>
+                            <input type="text" id="rebody" placeholder="댓글" />
+                        </th>
+                        <th>
+                            <button onclick="up_rewrite()">작성..!</button>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="comment_list">
+                    <!-- <tr val="1">
+                        <th>1</th>
+                        <th>테스트</th>
+                        <th><button onclick="pat_rewrite(this)">수정</button><button>삭제</button></th>
+                    </tr> -->
+                </tbody>
+            </table>
         </div>
     </div>
 </body>

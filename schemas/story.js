@@ -1,6 +1,19 @@
 const mongoose = require("mongoose")
 
 const { Schema } = mongoose
+
+const rewriteSchema = new Schema({
+  rebody: {
+    type: String,
+  },
+  pw: {
+    type: String,
+  },
+  username: {
+    type: String,
+  },
+})
+
 const storySchema = new Schema({
   writeId: {
     type: String,
@@ -10,17 +23,14 @@ const storySchema = new Schema({
   title: {
     type: String,
     required: true,
-    unique: true,
   },
   thumbnailUrl: {
     type: String,
     required: true,
-    unique: true,
   },
   story: {
     type: String,
     required: true,
-    unique: true,
   },
   date: {
     type: String,
@@ -29,7 +39,10 @@ const storySchema = new Schema({
   pw: {
     type: String,
     required: true,
-    unique: true,
+  },
+  rewrite: {
+    type: [rewriteSchema],
+    required: false,
   },
 })
 
