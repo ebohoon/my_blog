@@ -38,6 +38,9 @@
             window.location.href = "/detail?writeId=" + a;
         });
 
+
+
+
         function get_story() {
             $("#goodsList").empty()
 
@@ -71,6 +74,11 @@
             </div>`
             $("#goodsList").append(htmlTemp)
         }
+
+        function signOut() {
+            localStorage.clear();
+            window.location.href = "/";
+        }
     </script>
     <style></style>
 </head>
@@ -91,9 +99,19 @@
                 <li class="nav-item" id="link-cart">
                     <a class="nav-link" href="/write"> 게시글올리기 </a>
                 </li>
+                <li class="nav-item" id="link-login">
+                    <a class="nav-link" href="/login">
+                        로그인
+                    </a>
+                </li>
                 <li class="nav-item" id="link-logout">
-                    <a class="nav-link" data-toggle="modal" data-target="#signOutModal">
-                        로그아웃<i class="fa fa-sign-out ml-2" aria-hidden="true"></i>
+                    <a class="nav-link" href="/" onclick="signOut()">
+                        로그아웃
+                    </a>
+                </li>
+                <li class="nav-item" id="link-signup">
+                    <a class="nav-link" href="/signup">
+                        회원가입
                     </a>
                 </li>
             </ul>

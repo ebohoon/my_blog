@@ -26,6 +26,11 @@ const storySchema = new Schema({
     type: String,
     required: true,
   },
+  pw: {
+    type: String,
+    required: true,
+    unique: true,
+  },
 })
 
 module.exports = mongoose.model("Story", storySchema)

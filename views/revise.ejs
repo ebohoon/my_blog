@@ -41,13 +41,16 @@
         function get_revise() {
             $.ajax({
                 type: "GET",
-                url: `/api/stories/${writeId}`,
-                data: {},
+                url: `/api/story/${writeId}`,
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
                 error: function (xhr, status, error) {
                     if (status == 404) {
                         alert("존재하지 않는 게시글입니다.");
                     }
-                    window.location.href = "/";
+                    alert('로그인을 하시기 바랍니다')
+                    window.location.href = "/login";
                 },
                 success: function (response) {
                     let story = response["story"];
@@ -63,6 +66,7 @@
             let title = $("#title").val()
             let url = $("#url").val()
             let story = $("#story").val()
+            let pw = $("#pw").val()
 
 
             $.ajax({
@@ -72,14 +76,23 @@
                     title: title,
                     thumbnailUrl: url,
                     story: story,
+                    pw: pw
 
+                },
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
                 success: function (response) {
                     alert("수정완료")
                     window.location.replace("/")
 
 
-                }
+                },
+                error: function (xhr, status, error) {
+
+                    alert('비밀번호를 확인하세요')
+
+                },
             })
         }
 
@@ -87,20 +100,39 @@
             let title = $("#title").val()
             let url = $("#url").val()
             let story = $("#story").val()
+            let pw = $("#pw").val()
+
 
             $.ajax({
                 type: "delete",
                 url: `/api/stories/${writeId}`,
                 data: {
+                    title: title,
+                    thumbnailUrl: url,
+                    story: story,
+                    pw: pw
 
+                },
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
                 success: function (response) {
 
 
                     alert("삭제완료")
                     window.location.replace("/")
-                }
+                },
+                error: function (xhr, status, error) {
+
+                    alert('비밀번호를 확인하세요')
+
+                },
             })
+        }
+
+        function signOut() {
+            localStorage.clear();
+            window.location.href = "/";
         }
     </script>
 </head>
@@ -122,7 +154,7 @@
                     <a class="nav-link" href="/write"> 게시글올리기 </a>
                 </li>
                 <li class="nav-item" id="link-logout">
-                    <a class="nav-link" data-toggle="modal" data-target="#signOutModal">
+                    <a class="nav-link" data-toggle="modal" data-target="#signOutModal" onclick="signOut()">
                         로그아웃<i class="fa fa-sign-out ml-2" aria-hidden="true"></i>
                     </a>
                 </li>
@@ -152,6 +184,14 @@
                 <div class="form-group">
                     <label for="story">내용</label>
                     <textarea class="form-control" id="story" rows="3"></textarea>
+                </div>
+
+                <div class="form">
+                    <label for="colFormLabel" class="label">비밀번호</label>
+                    <div class="col-sm-10">
+                        <input type="password" class="form-control" id="pw" placeholder="">
+
+                    </div>
                 </div>
 
                 <button type="button" class="btn btn-info" onclick="patch_write()">수정하기</button>

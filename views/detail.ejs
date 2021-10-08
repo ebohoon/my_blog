@@ -29,9 +29,9 @@
     <link href="/static/mystyle.css" rel="stylesheet" />
     <title>BH STUDIO</title>
     <script>
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
-        const writeId = urlParams.get("writeId");
+        const queryString = window.location.search
+        const urlParams = new URLSearchParams(queryString)
+        const writeId = urlParams.get("writeId")
 
         $(document).ready(function () {
             get_story()
@@ -53,7 +53,7 @@
                         console.log(write)
                         make_card(write)
                     }
-                }
+                },
             })
         }
 
@@ -71,6 +71,11 @@
             <button type="button" class="btn btn-info" onclick="location.href='revise?writeId=${item["writeId"]}'">수정하기</button>
             `
             $("#goodsList").append(htmlTemp)
+        }
+
+        function signOut() {
+            localStorage.clear();
+            window.location.href = "/";
         }
     </script>
 </head>
@@ -91,8 +96,11 @@
                 <li class="nav-item" id="link-cart">
                     <a class="nav-link" href="/write"> 게시글올리기 </a>
                 </li>
+                <li class="nav-item" id="link-cart">
+                    <a class="nav-link" href="/login"> 로그인 </a>
+                </li>
                 <li class="nav-item" id="link-logout">
-                    <a class="nav-link" data-toggle="modal" data-target="#signOutModal">
+                    <a class="nav-link" data-toggle="modal" data-target="#signOutModal" onclick="signOut()">
                         로그아웃<i class="fa fa-sign-out ml-2" aria-hidden="true"></i>
                     </a>
                 </li>
@@ -103,11 +111,13 @@
         <div id="goodsList">
             <div class="col mb-4">
                 <div class="card">
-                    <img src="/static/bhstudio.jpg" class="card-img-top" alt="">
+                    <img src="/static/bhstudio.jpg" class="card-img-top" alt="" />
                     <div class="card-body">
                         <h5 class="card-title">Card title</h5>
-                        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to
-                            additional content. This content is a little bit longer.</p>
+                        <p class="card-text">
+                            This is a longer card with supporting text below as a natural lead-in to additional
+                            content. This content is a little bit longer.
+                        </p>
                     </div>
                 </div>
             </div>
