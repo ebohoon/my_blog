@@ -35,15 +35,14 @@
 
         $(document).ready(function () {
             get_story()
-            console.log(writeId)
+
         })
 
         function get_story() {
             $("#goodsList").empty()
-            console.log(writeId)
             $.ajax({
                 type: "GET",
-                url: `/api/stories/${writeId}`,
+                url: `/api/story/${writeId}`,
                 data: {},
                 headers: {
                     authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -55,12 +54,44 @@
                     } else {
                         console.log(write)
                         make_card(write)
+                        get_remain()
 
                         for (rewrite of write["rewrite"]) {
                             make_re(rewrite)
                         }
                     }
                 },
+            })
+        }
+
+        function get_remain() {
+
+            $.ajax({
+                type: "GET",
+                url: '/api/users/me',
+                data: {},
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                success: function (response) {
+                    let write = response["nickname"]
+
+                    if (write == null) {
+                        alert("정보가 존재하지않음")
+                    } else {
+
+                        make_remain(write)
+
+
+                    }
+                },
+                error: function (request, status, error) {
+                    alert("로그인을 해주세요");
+                    window.location.href = '/login'
+                },
+
+
+
             })
         }
 
@@ -77,6 +108,27 @@
             </div>
             <button type="button" class="btn btn-info" onclick="location.href='revise?writeId=${item["writeId"]}'">수정하기</button>
             `
+            $("#goodsList").append(htmlTemp)
+        }
+
+        function make_remain(item) {
+            let htmlTemp = ` <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            <input type="text" id="toname" placeholder="비로그인 작성불가" 
+                            value ="${item}"readonly />
+                        </th>
+                        <th>
+                            <input type="text" id="rebody" placeholder="댓글" />
+                        </th>
+                        <th>
+                            <button onclick="up_rewrite()">작성..!</button>
+                        </th>
+                    </tr>
+                </thead>
+                
+            </table>`
             $("#goodsList").append(htmlTemp)
         }
 
@@ -121,7 +173,10 @@
                     window.location.reload()
                 },
                 error: function (error) {
+
                     alert(error.responseJSON.errorMessage)
+
+
                 },
             })
         }
@@ -206,11 +261,6 @@
         }
 
 
-
-
-
-
-
         function signOut() {
             localStorage.clear()
             window.location.href = "/"
@@ -274,10 +324,9 @@
         <div>
             <table class="table">
                 <thead>
-                    <tr>
+                    <!-- <tr>
                         <th>
-                            <input type="text" id="toname" placeholder="비로그인 작성불가"
-                                value="<% if(mysess){ %><%= id %><% } %>" readonly />
+                            <input type="text" id="toname" placeholder="비로그인 작성불가" readonly />
                         </th>
                         <th>
                             <input type="text" id="rebody" placeholder="댓글" />
@@ -285,7 +334,7 @@
                         <th>
                             <button onclick="up_rewrite()">작성..!</button>
                         </th>
-                    </tr>
+                    </tr> -->
                 </thead>
                 <tbody id="comment_list">
                     <!-- <tr val="1">

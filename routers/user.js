@@ -71,6 +71,7 @@ router.post("/auth", async (req, res) => {
     return
   }
   const token = jwt.sign({ userId: user.userId }, "bohoon100")
+  console.log(token)
   res.send({
     token,
   })
@@ -80,6 +81,7 @@ router.post("/auth", async (req, res) => {
 router.get("/users/me", authMiddleware, async (req, res) => {
   const { user } = res.locals
   console.log(res.locals)
+
   res.send({
     email: user.email,
     nickname: user.nickname,
